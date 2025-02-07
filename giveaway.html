@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🎁 Giveaway Chat (Telegram Integrated) 🎁</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+            background-color: #0d0d0d;
+            color: white;
+            position: relative;
+            overflow: hidden;
+        }
+
+        #particles-js {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        h1 {
+            color: #ff4500;
+            text-shadow: 0 0 10px rgba(255, 69, 0, 0.8);
+            position: relative;
+            z-index: 1;
+        }
+
+        #chat-box {
+            width: 90%;
+            max-width: 350px;
+            height: 300px;
+            border: 2px solid white;
+            background: rgba(255, 255, 255, 0.1);
+            overflow-y: auto;
+            margin: 15px auto;
+            padding: 10px;
+            border-radius: 8px;
+            position: relative;
+            z-index: 1;
+        }
+
+        .message {
+            padding: 8px;
+            margin: 5px 0;
+            border-radius: 5px;
+            background: rgba(255, 69, 0, 0.8);
+            color: white;
+            text-align: left;
+            font-size: 14px;
+        }
+
+        .user-input {
+            width: 85%;
+            padding: 10px;
+            margin: 5px 0;
+            border: 1px solid white;
+            border-radius: 5px;
+            font-size: 14px;
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            position: relative;
+            z-index: 1;
+        }
+
+        button {
+            padding: 10px;
+            border: none;
+            background: white;
+            color: #ff4500;
+            cursor: pointer;
+            border-radius: 5px;
+            font-size: 16px;
+            width: 90%;
+            max-width: 350px;
+            margin-top: 5px;
+            transition: 0.3s;
+            position: relative;
+            z-index: 1;
+        }
+
+        button:hover {
+            background: #ff1493;
+            color: white;
+            box-shadow: 0 0 15px white;
+        }
+
+        /* Alert Box (Center of Full Page) */
+        .android-alert {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: rgba(0, 0, 0, 0.9);
+            color: white;
+            padding: 20px 30px;
+            border-radius: 10px;
+            font-size: 18px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(255, 0, 0, 0.5);
+            display: none;
+            z-index: 1000;
+        }
+
+        .android-alert.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="particles-js"></div>
+
+    <h1>🎁 Special Giveaway Event! 🎁</h1>
+    <p>💡 Provide your information and send a message to participate in the giveaway event!</p>
+
+    <div id="chat-box">
+        <p>🔹 Your messages will be displayed here...</p>
+    </div>
+
+    <div class="android-alert" id="android-alert">⚠️ Please fill in all the details!</div>
+
+    <input type="text" id="name-input" class="user-input" placeholder="👤 Enter your name">
+    <input type="text" id="telegram-input" class="user-input" placeholder="📩 Enter your Telegram username (@username)">
+    <input type="text" id="message-input" class="user-input" placeholder="💬 Enter your message">
+    <button onclick="sendMessage()">✅ Join Giveaway</button>
+
+    <script>
+        const BOT_TOKEN = "YOUR_BOT_TOKEN_HERE"; // **Enter your Telegram bot token**
+        const CHAT_ID = "YOUR_CHAT_ID_HERE";  // **Enter your chat ID**
+
+        function sendMessage() {
+            let name = document.getElementById("name-input").value.trim();
+            let telegram = document.getElementById("telegram-input").value.trim();
+            let message = document.getElementById("message-input").value.trim();
+
+            if (name === "" || telegram === "" || message === "") {
+                showAlert("⚠️ Please fill in all the details!");
+                return;
+            }
+
+            let chatBox = document.getElementById("chat-box");
+            let newMessage = document.createElement("div");
+            newMessage.className = "message";
+            newMessage.innerText = `👤 ${name} (@${telegram}): ${message}`;
+            chatBox.appendChild(newMessage);
+            chatBox.scrollTop = chatBox.scrollHeight;
+
+            document.getElementById("name-input").value = "";
+            document.getElementById("telegram-input").value = "";
+            document.getElementById("message-input").value = "";
+
+            let telegramAPI = `https://api.telegram.org/bot${BOT_TOKEN}/sendMessage`;
+            let data = {
+                chat_id: CHAT_ID,
+                text: `🎉 *Giveaway Participation* 🎉\n\n👤 *Name:* ${name}\n📩 *Telegram:* @${telegram}\n💬 *Message:* ${message}`,
+                parse_mode: "Markdown"
+            };
+
+            fetch(telegramAPI, {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(data)
+            }).then(response => response.json())
+            .then(data => {
+                if (data.ok) {
+                    showAlert("✅ Your registration was successful!");
+                }
+            }).catch(error => {
+                showAlert("⚠️ Failed to send the message!");
+            });
+        }
+
+        function showAlert(msg) {
+            let alertBox = document.getElementById("android-alert");
+            alertBox.innerText = msg;
+            alertBox.classList.add("show");
+            setTimeout(() => { alertBox.classList.remove("show"); }, 3000);
+        }
+    </script>
+
+    <!-- Particles Background Library -->
+    <script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+    <script>
+        particlesJS.load('particles-js', 'https://raw.githubusercontent.com/VincentGarreau/particles.js/master/demo/particles.json');
+    </script>
+
+</body>
+</html>
